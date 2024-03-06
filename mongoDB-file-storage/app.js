@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
-const { MongoClient, GridFSBucket } = require('mongodb');
+const { MongoClient, GridFSBucket, ObjectId } = require('mongodb');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
@@ -59,6 +59,75 @@ app.post('/upload', upload.single('file'), (req, res) => {
       // Redirect to index with success message
       res.redirect('/?success=true');
     });
+});
+
+// Fetch list of stored files
+app.get('/files', async (req, res) => {
+  if (!bucket) {
+    return res.status(500).send('Could not access GridFS Bucket');
+  }
+
+  try {
+    const files = await bucket.find().toArray();
+    res.json(files.map(file => {
+      return {
+        filename: file.filename,
+        fileId: file._id,
+      };
+    }));
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+// Delete file endpoint
+app.delete('/files/:id', async (req, res) => {
+  try {
+    await bucket.delete(new ObjectId(req.params.id));
+    res.send({ message: 'File deleted successfully' });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+// File view endpoint
+app.get('/files/view/:id', (req, res) => {
+  if (!bucket) {
+    return res.status(500).send('Could not access GridFS Bucket');
+  }
+
+  const viewStream = bucket.openDownloadStream(new ObjectId(req.params.id));
+
+  viewStream.on('error', function(error) {
+    res.status(404).send('File not found');
+  });
+
+  viewStream.pipe(res);
+});
+
+
+// File download endpoint
+app.get('/files/download/:id', (req, res) => {
+  if (!bucket) {
+    return res.status(500).send('Could not access GridFS Bucket');
+  }
+
+  bucket.find({_id: new ObjectId(req.params.id)}).toArray((err, files) => {
+    if (err) {
+      return res.status(500).send(error.message);
+    }
+    if (!files[0] || files.length === 0) {
+      return res.status(404).send('No file found');
+    }
+
+    res.setHeader('Content-Disposition', 'attachment; filename="' + files[0].filename + '"');
+    
+    const downloadStream = bucket.openDownloadStream(files[0]._id);
+    downloadStream.on('error', function(error) {
+      res.status(404).send('File not found');
+    });
+    downloadStream.pipe(res);
+  });
 });
 
 const port = 5000;
