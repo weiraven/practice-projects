@@ -1,0 +1,8 @@
+/vscode
+.DS_Store
+Thumbs.db
+.env
+*.log
+*.tmp, *.swp, *, *.swo
+
+mongo_file_uploads/
