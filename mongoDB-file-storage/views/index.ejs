@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <title>Megazord File Storage</title>
+    <style>
+        #files li {
+            list-style-type: none;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -21,13 +27,91 @@
                       </div>
                 </form>
                 <% if (success) { %>
-                    <div class="alert alert-success" role="alert">
+                    <div class="alert alert-success" role="alert" id="successMessage">
                       File uploaded successfully!
                     </div>
-                  <% } %>
+                <% } %>
+                <script>
+                    window.onload = function() {
+                        const successMessage = document.getElementById('successMessage');
+                        if (successMessage) {
+                            // Wait for 3 seconds (3000 milliseconds) before hiding the message
+                            setTimeout(function() {
+                                successMessage.style.display = 'none'; // Hide the element 
+                                const url = new URL(window.location);
+                                url.searchParams.delete('success'); // Remove success query param so the message doesn't display again
+                                window.history.replaceState(null, null, url); // Replace the URL history without navigating
+                            }, 3000);
+                        }
+                    }
+                </script>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-6 m-auto">
+                <div id="fileList">
+                    <h3 class="text-center display-6 my-4">Currently Stored Files</h3>
+                    <ul id="files"></ul>
+                </div>            
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        fetch('/files')
+                            .then(response => response.json())
+                            .then(files => {
+                                const fileList = document.getElementById('files');
+                                files.forEach(file => {
+                                    const li = document.createElement('li');
+                                    li.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-2');
+
+                                    const fileNameSpan = document.createElement('span');
+                                    fileNameSpan.textContent = file.filename;
+                                    li.appendChild(fileNameSpan);
+
+                                    const buttonContainer = document.createElement('div');
+
+                                    // Delete Button
+                                    const deleteBtn = document.createElement('button');
+                                    deleteBtn.textContent = 'Delete';
+                                    deleteBtn.setAttribute('data-fileid', file.fileId);
+                                    deleteBtn.classList.add('btn', 'btn-outline-secondary', 'me-2');
+                                    deleteBtn.onclick = function() {
+                                        const fileId = this.getAttribute('data-fileid');
+                                        fetch('/files/' + fileId, { method: 'DELETE' })
+                                            .then(response => response.json())
+                                            .then(data => {
+                                                console.log(data);
+                                                this.closest('li').remove();
+                                            })
+                                            .catch(error => console.error('Error:', error));
+                                    };
+                                    buttonContainer.appendChild(deleteBtn);
+      
+                                    // View Link
+                                    const viewLink = document.createElement('a');
+                                    viewLink.textContent = 'View';
+                                    viewLink.setAttribute('href', '/files/view/' + file.fileId);
+                                    viewLink.setAttribute('target', '_blank'); // Open preview in new tab
+                                    viewLink.classList.add('btn', 'btn-outline-secondary', 'me-2');
+                                    buttonContainer.appendChild(viewLink);
+
+                                    // Download Link
+                                    const downloadLink = document.createElement('a');
+                                    downloadLink.textContent = 'Download';
+                                    downloadLink.setAttribute('href', '/files/download/' + file.fileId);
+                                    downloadLink.classList.add('btn', 'btn-outline-secondary', 'me-2');
+                                    buttonContainer.appendChild(downloadLink);
+
+                                    li.appendChild(buttonContainer);
+                                    fileList.appendChild(li);
+                                });
+                            });
+                    });
+                </script>
+            </div>
+        </div>
+        
     </div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
