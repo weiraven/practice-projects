@@ -1,0 +1,7 @@
+/vscode
+.DS_Store
+Thumbs.db
+.env
+node_modules/
+*.log
+*.tmp, *.swp, *, *.swo

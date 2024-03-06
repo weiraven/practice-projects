@@ -1,0 +1,30 @@
+{
+  "name": "mongodb-file-storage",
+  "version": "1.0.0",
+  "description": "practice app for uploading and retrieving large files to/from MongoDB",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/weiraven/practice-projects/mongoDB-file-storage"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.9",
+    "express": "^4.18.3",
+    "gridfs-stream": "^1.1.1",
+    "method-override": "^3.0.0",
+    "mongodb": "^6.4.0",
+    "mongoose": "^8.2.1",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
