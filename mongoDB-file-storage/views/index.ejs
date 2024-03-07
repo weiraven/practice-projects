@@ -6,10 +6,23 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <title>Megazord File Storage</title>
     <style>
+        #files {
+            padding-left: 0;
+        }
+
         #files li {
             list-style-type: none;
             margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
         }
+
+        #files li > span {
+            flex-grow: 1;
+            min-width: 60%;
+        }
+
     </style>
 </head>
 <body>
@@ -17,7 +30,7 @@
         <div class="row">
             <div class="col-md-6 m-auto">
                 <h1 class="text-center display-4 my-4">Megazord File Storage</h1>
-                <form action="/upload" method="POST" enctype="multipart/form-data">
+                <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
                     <div class="input-group mb-3">
                         <input type="file" name="file" id="file" class="form-control">
                         <label for="file" class="input-group-text">Upload</label>
@@ -26,12 +39,10 @@
                         <input class="btn btn-primary" type="submit" value="Submit">
                       </div>
                 </form>
-                <% if (success) { %>
-                    <div class="alert alert-success" role="alert" id="successMessage">
-                      File uploaded successfully!
-                    </div>
-                <% } %>
-                <script>
+                <div id="messageContainer" class="mt-3" style="display: none;">
+                    <div id="message" class="alert" role="alert"></div>
+                </div>
+                <!-- <script>
                     window.onload = function() {
                         const successMessage = document.getElementById('successMessage');
                         if (successMessage) {
@@ -44,17 +55,41 @@
                             }, 3000);
                         }
                     }
-                </script>
+                </script> -->
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6 m-auto">
+            <div class="col-md-9 m-auto">
                 <div id="fileList">
                     <h3 class="text-center display-6 my-4">Currently Stored Files</h3>
                     <ul id="files"></ul>
                 </div>            
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
+                        const uploadForm = document.getElementById('uploadForm');
+                        uploadForm.addEventListener('submit', function(e) {
+                            e.preventDefault(); // Prevent the default form submission
+                            
+                            const formData = new FormData(this);
+                            fetch('/upload', {
+                                method: 'POST',
+                                body: formData,
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(data);
+                                showMessage(data.message, 'success');
+                                // Reload the page to update the file list
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 2000); // Gives time for the success message to be read
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                showMessage('An error occurred during upload.', 'danger');
+                            });
+                        });
+
                         fetch('/files')
                             .then(response => response.json())
                             .then(files => {
@@ -73,16 +108,23 @@
                                     const deleteBtn = document.createElement('button');
                                     deleteBtn.textContent = 'Delete';
                                     deleteBtn.setAttribute('data-fileid', file.fileId);
-                                    deleteBtn.classList.add('btn', 'btn-outline-secondary', 'me-2');
+                                    deleteBtn.classList.add('btn', 'btn-outline-secondary', 'btn-sm', 'me-2');
+
                                     deleteBtn.onclick = function() {
                                         const fileId = this.getAttribute('data-fileid');
                                         fetch('/files/' + fileId, { method: 'DELETE' })
                                             .then(response => response.json())
                                             .then(data => {
                                                 console.log(data);
-                                                this.closest('li').remove();
+                                                this.closest('li').remove(); // Remove the file entry from the list
+                                                
+                                                // Display the success message
+                                                showMessage(data.message, 'success');
                                             })
-                                            .catch(error => console.error('Error:', error));
+                                            .catch(error => {
+                                                console.error('Error:', error);
+                                                showMessage('An error occurred.', 'danger'); // Show error message
+                                            });
                                     };
                                     buttonContainer.appendChild(deleteBtn);
       
@@ -91,20 +133,33 @@
                                     viewLink.textContent = 'View';
                                     viewLink.setAttribute('href', '/files/view/' + file.fileId);
                                     viewLink.setAttribute('target', '_blank'); // Open preview in new tab
-                                    viewLink.classList.add('btn', 'btn-outline-secondary', 'me-2');
+                                    viewLink.classList.add('btn', 'btn-outline-secondary', 'btn-sm', 'me-2');
                                     buttonContainer.appendChild(viewLink);
 
                                     // Download Link
                                     const downloadLink = document.createElement('a');
                                     downloadLink.textContent = 'Download';
                                     downloadLink.setAttribute('href', '/files/download/' + file.fileId);
-                                    downloadLink.classList.add('btn', 'btn-outline-secondary', 'me-2');
+                                    downloadLink.classList.add('btn', 'btn-outline-secondary', 'btn-sm', 'me-2');
                                     buttonContainer.appendChild(downloadLink);
 
                                     li.appendChild(buttonContainer);
                                     fileList.appendChild(li);
                                 });
                             });
+                        // Function to show messages
+                        function showMessage(message, type) {
+                            const messageContainer = document.getElementById('messageContainer');
+                            const messageElement = document.getElementById('message');
+                            messageElement.textContent = message;
+                            messageElement.className = `alert alert-${type}`; // 'type' allows for success or danger messages
+                            messageContainer.style.display = 'block';
+                            
+                            // Automatically hide the message after 2 seconds
+                            setTimeout(() => {
+                                messageContainer.style.display = 'none';
+                            }, 2000);
+                        }                          
                     });
                 </script>
             </div>
