@@ -48,7 +48,7 @@ A fun **React + Vite** web app that randomly generates **coding exercises** for 
 ```
 
 ## **🎥 Video Walkthrough**
-<img src='https://github.com/weiraven/practice-projects/code-exercises-gachapon/public/images/exercise-machine-demo.gif' title='Video Walkthrough' width='1000' alt='Video Walkthrough' />
+<img src='code-exercises-gachapon/public/images/exercise-machine-demo.gif' title='Video Walkthrough' width='1000' alt='Video Walkthrough' />
 
 GIF created with [ScreenToGif](https://www.screentogif.com/) for Windows
 
