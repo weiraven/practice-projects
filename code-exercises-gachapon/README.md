@@ -1,12 +1,63 @@
-# React + Vite
+# **Code Exercise Machine 🎰💻**  
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A fun **React + Vite** web app that randomly generates **coding exercises** for students to practice! Users can click the **gachapon machine** to receive a new challenge, filter exercises by category, and remove individual exercises as they go.  
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## **🚀 Features**  
+✅ **Random Coding Challenges** – Click the gachapon machine to get a new coding problem.  
+✅ **Category Filtering** – Select a specific topic (e.g., Arrays, Recursion) for targeted practice.  
+✅ **Exercise History** – Previously drawn exercises remain visible.  
+✅ **Remove Exercises** – Click the **🗑 Trashcan icon** to delete an individual exercise.  
+✅ **Restart Button** – Clears all exercises and starts fresh.  
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## **📦 Installation & Setup**  
+1. **Clone the repository:**  
+   ```bash
+   git clone https://github.com/your-username/code-exercise-machine.git
+   cd code-exercise-machine
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+4. **Open the app in your browser at:**
+   ```bash
+   http://localhost:5173
+   ```
+
+## **📂 Project Structure**
+```bash
+/public
+  ├── images/                # Gachapon machine GIF
+  ├── exercises.json         # Bank of coding exercises
+/src
+  ├── App.jsx                # Main application component
+  ├── App.css                # Styling
+  ├── main.jsx               # React entry point
+  ├── components/            # (Future components can go here)
+```
+
+## **🛠 Technologies Used**
+- React (with Vite)
+- JavaScript (ES6+)
+- CSS (Animations & Styling)
+
+## **📌 Future Enhancements**
+🔹 Timer Mode – Add a countdown timer for timed challenges.
+🔹 Exercise Streaks – Track how many exercises a user completes.
+🔹 Save Progress – Allow users to revisit past exercises.
+
+## **📜 License**
+MIT License – Free to use and modify.
+
+
